@@ -4,6 +4,18 @@
 #include <windows.h>
 #include <SFML\Graphics.hpp>
 
+/*
+Do zrobienia:
+-okno zarz¹dzania dru¿yn¹ w trakcie meczu
+-spadek poziomu kondycji w trakcie meczu
+-dodanie mo¿liwoœci otrzymania kartki i kontuzji
+-dodanie paska pokazuj¹cego szanse obu dru¿yn
+-dodanie wp³ywu poziomu linii pomocy na szanse dru¿yn
+
+-dodanie formacji
+-dodanie wp³ywu umieszczenia zawodnika na nie swojej pozycji
+
+*/
 using namespace std;
 
 class Player {
@@ -24,6 +36,7 @@ class Player {
 
 public:
 
+	//Funkcja zwraca imiê pi³karza
 	string get_name() {
 		return name;
 	}
@@ -74,6 +87,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 	///Rozpoczêcie meczu
 	///Wykonywane tylko raz
 
+	//£adowanie czcionki oraz t³a
 	sf::Font font;
 	if (!font.loadFromFile("arial.ttf"))
 		cout << "Couldn't load font";
@@ -82,19 +96,27 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 	texture.loadFromFile("grafika/trawa.jpg");
 	background.setTexture(texture);
 
+	//Tablice wska¿ników pokazuj¹cych na pi³karzy
+	Player *team1[17];
+	Player *team2[17];
+	//Przypisanie pi³karzy do wska¿ników
+	for (int i = 0; i < 17; i++) {
+		team1[i] = &player1[i];
+		team2[i] = &player2[i];
+	}
 
-
+	//Wyœwietlenie nazwisk pi³karzy
 	sf::Text players_names_1[17];
 	for (int i = 0; i < 11; i++) {
 		players_names_1[i].setFont(font);
-		players_names_1[i].setString(player1[i].get_name());
+		players_names_1[i].setString(team1[i]->get_name());
 		players_names_1[i].setColor(sf::Color::White);
 		players_names_1[i].setCharacterSize(20);
 		players_names_1[i].setPosition(50, 100 + i * 28);
 	}
 	for (int i = 11; i < 17; i++) {
 		players_names_1[i].setFont(font);
-		players_names_1[i].setString(player1[i].get_name());
+		players_names_1[i].setString(team1[i]->get_name());
 		players_names_1[i].setColor(sf::Color::Yellow);
 		players_names_1[i].setCharacterSize(18);
 		players_names_1[i].setPosition(50, 120 + i * 28);
@@ -103,18 +125,19 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 	sf::Text players_names_2[17];
 	for (int i = 0; i < 11; i++) {
 		players_names_2[i].setFont(font);
-		players_names_2[i].setString(player2[i].get_name());
+		players_names_2[i].setString(team2[i]->get_name());
 		players_names_2[i].setColor(sf::Color::White);
 		players_names_2[i].setCharacterSize(20);
 		players_names_2[i].setPosition(600, 100 + i * 28);
 	}
 	for (int i = 11; i < 17; i++) {
 		players_names_2[i].setFont(font);
-		players_names_2[i].setString(player2[i].get_name());
+		players_names_2[i].setString(team2[i]->get_name());
 		players_names_2[i].setColor(sf::Color::Yellow);
 		players_names_2[i].setCharacterSize(18);
 		players_names_2[i].setPosition(600, 120 + i * 28);
 	}
+	//Wyœwietlenie nazw dru¿yn, wyniku, zegara
 	char goal1 = '0', goal2 = '0';
 	sf::Text team1_name("team1", font, 35);
 	team1_name.setPosition(50, 30);
@@ -143,7 +166,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 
 	public:
 
-		Event(int number = 0, string teamx = "team1", string playerx = "Kow", string timex="00", string type = "X") {
+		Event(int number = 0, string teamx = "team1", string playerx = "Kow", string timex="00", string type = "goal") {
 			font.loadFromFile("arial.ttf");
 			team.setCharacterSize(20);
 			team.setPosition(810, 50+number * 30);
@@ -169,6 +192,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 			icon.setPosition(780, number * 30 + 50);
 
 		}
+
 		//Funkcja tymczasowa(Nieoficjalny konstruktor)
 		void set(int number, string teamx, string playerx, string timex, string type) {
 			team.setPosition(810, 50 + number * 40);
@@ -179,6 +203,17 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 
 			time.setPosition(810, number * 40 + 70);
 			time.setString(timex);
+
+			//Pokazanie obrazka odpowiedniego do wydarzenia 
+			//Wydarzenie 'goal' zapisane jest w konstruktorze domyœlnym - brak zmiany spowoduje wyœwietlenie tego wydarzenia
+			if (type == "y_card")
+				texture.loadFromFile("grafika/¿ó³ta_kartka.jpg");
+			else if (type == "r_card")
+				texture.loadFromFile("grafika/czerwona_kartka.jpg");
+			else if (type == "injury")
+				texture.loadFromFile("grafika/kontuzja.png");
+
+			icon.setTexture(texture);
 
 			icon.setPosition(780, number * 40 + 50);
 		}
@@ -209,17 +244,18 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 
 	double team1_defence = 0, team2_defence = 0, team1_offensive = 0, team2_offensive = 0, team1_midle = 0, team2_midle = 0;
 	for (int i = 0; i < 11; i++) {
-		player1[i].set_overall();
-		player2[i].set_overall();
-		team1_defence += (player1[i].get_stats("defence") + player1[i].get_stats("pace") + player1[i].get_stats("physicality"))
-			* (player1[i].get_stats("overall") - 30) / 3 * (player1[i].get_stats("condition") + 30) / 90;//(((int)((int)(player1[i].get_stats("condition") / 90) * 10 + player1[i].get_stats("condition")) % 100 - 60));
-		team2_defence += (player2[i].get_stats("defence") + player2[i].get_stats("pace") + player2[i].get_stats("physicality"))
-			* ((player2[i].get_stats("overall") - 30) / 3) * (player2[i].get_stats("condition") + 30) / 90;// (((int)((int)(player2[i].get_stats("condition") / 90) * 10 + player2[i].get_stats("condition")) % 100 - 60));
-		team1_offensive += (player1[i].get_stats("shooting") + player1[i].get_stats("pace") + player1[i].get_stats("physicality"))
-			* (player1[i].get_stats("overall") - 30) / 3 * (player1[i].get_stats("condition") + 30) / 90;//(((int)((int)(player1[i].get_stats("condition") / 90) * 10 + player1[i].get_stats("condition")) % 100 - 60));
-		team2_defence += (player2[i].get_stats("shooting") + player2[i].get_stats("pace") + player2[i].get_stats("physicality"))
-			* (player2[i].get_stats("overall") - 30) / 3 * (player2[i].get_stats("condition") + 30) / 90;//(((int)((int)(player2[i].get_stats("condition") / 90) * 10 + player2[i].get_stats("condition")) % 100 - 60));
+		team1[i]->set_overall();
+		team2[i]->set_overall();
+		team1_defence += (team1[i]->get_stats("defence") + team1[i]->get_stats("pace") + team1[i]->get_stats("physicality"))
+			* (team1[i]->get_stats("overall") - 30) / 3 * (team1[i]->get_stats("condition") + 30) / 90;//(((int)((int)(team1[i]->get_stats("condition") / 90) * 10 + team1[i]->get_stats("condition")) % 100 - 60));
+		team2_defence += (team2[i]->get_stats("defence") + team2[i]->get_stats("pace") + team2[i]->get_stats("physicality"))
+			* ((team2[i]->get_stats("overall") - 30) / 3) * (team2[i]->get_stats("condition") + 30) / 90;// (((int)((int)(team2[i]->get_stats("condition") / 90) * 10 + team2[i]->get_stats("condition")) % 100 - 60));
+		team1_offensive += (team1[i]->get_stats("shooting") + team1[i]->get_stats("pace") + team1[i]->get_stats("physicality"))
+			* (team1[i]->get_stats("overall") - 30) / 3 * (team1[i]->get_stats("condition") + 30) / 90;//(((int)((int)(team1[i]->get_stats("condition") / 90) * 10 + team1[i]->get_stats("condition")) % 100 - 60));
+		team2_defence += (team2[i]->get_stats("shooting") + team2[i]->get_stats("pace") + team2[i]->get_stats("physicality"))
+			* (team2[i]->get_stats("overall") - 30) / 3 * (team2[i]->get_stats("condition") + 30) / 90;//(((int)((int)(team2[i]->get_stats("condition") / 90) * 10 + team2[i]->get_stats("condition")) % 100 - 60));
 	}
+
 	team1_offensive = (8100 - team1_offensive / 11 + team2_defence / 11);
 	team2_offensive = (8100 - team2_offensive / 11 + team1_defence / 11) + 1;
 	//cout << team1_offensive << endl << team2_offensive << endl;
@@ -264,7 +300,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 			goals1++;
 			goal1++;
 			goals1_text.setString(goal1);
-			event[event_counter].set(event_counter, "team1", player1[0].get_name(), clock, "X");
+			event[event_counter].set(event_counter, "team1", team1[0]->get_name(), clock, "goal");
 			event_counter++;
 		}
 
@@ -272,9 +308,11 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 			goals2++;
 			goal2++;
 			goals2_text.setString(goal2);
-			event[event_counter].set(event_counter, "team2", player2[0].get_name(), clock, "X");
+			event[event_counter].set(event_counter, "team2",team2[0]->get_name(), clock, "goal");
 			event_counter++;
 		}
+
+
 	}
 /*	if (event_counter == 1)
 		delete event;
