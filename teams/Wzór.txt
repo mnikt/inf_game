@@ -1,0 +1,21 @@
+1. Nazwa dru¿yny
+2. formacja
+3. 
+4. 
+5. 
+6.				Pierwsze 6 linii mo¿na nic nie wpisywaæ na razie
+7. string name = "Kowalski";    //Tylko name bez znaków
+8. double pace = 80;		//Tylko dwie cyfry
+9. double passing = 80;		//Tylko dwie cyfry
+10. double shooting = 80;	//Tylko dwie cyfry
+11. double condition = 99;	//Tylko dwie cyfry
+12. double defence = 95;	//Tylko dwie cyfry
+13. double physicality = 80;	//Tylko dwie cyfry
+14. int overall = 70;		//Tylko dwie cyfry
+15. int injury = 0;		//Zawsze 0
+16. Position position = goalkeeper; //WZÓR : Bramkarz - 3, Obroñca - 2, Pomocnik - 1, Napastnik - 0
+17. bool no_r_card = 1;	//Zawsze 1
+18. string name = "Kowalski"	//Kolejny zawodnik
+
+
+
