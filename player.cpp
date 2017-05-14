@@ -191,7 +191,7 @@ no_r_card (true)
 		{
 			clean_file_team(team_name);
 			file = open_file_team(team_name);
-			file << endl << endl << endl << endl << endl;
+			file << endl << endl << endl << endl << endl << endl;
 		} else file = open_file_team(team_name);
 
 		file << name << endl;
