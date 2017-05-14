@@ -54,7 +54,12 @@ public:
 	///Funkcja otwiera plik z danymi dru¿yny
 	fstream open_file_team(string);
 
+	///Funkcja czyœci plik z danymi dru¿yny
+	void Player::clean_file_team(string);
+
 	///Funkcja ³aduj¹ca statystyki z pliku
 	void load_stats(int,string);//nr_zawodnika, nazwa_dru¿yny 
 
+	///Funkcja ³aduj¹ca statystyki do pliku
+	void send_stats(int number, string team_name);
 };

@@ -122,21 +122,38 @@ no_r_card (true)
 	fstream Player::open_file_team(string name) {
 		fstream plik;
 		if (name == "Wzór")
-			plik.open("teams/Wzór.txt", ios::in);
+			plik.open("teams/Wzór.txt", ios::in | ios::out | ios::app);
 		if (name == "Dru¿yna_testowa")
-			plik.open("teams/Dru¿yna_testowa.txt", ios::in);
+			plik.open("teams/Dru¿yna_testowa.txt", ios::in | ios::out | ios::app);
 		if (name == "Pogoñ_Szczecin")
-			plik.open("teams/Szczecin.txt", ios::in);
+			plik.open("teams/Szczecin.txt", ios::in | ios::out | ios::app);
 		if (name == "Main_team")
-			plik.open("teams/main_team.txt", ios::in);
+			plik.open("teams/main_team.txt", ios::in | ios::out | ios::app);
+		if (name == "test")
+			plik.open("teams/test.txt", ios::in | ios::out | ios::app);
 		cout << plik.good();
 		if(plik.good()==true)
 			return plik;
 		else exit(0);
 	}
+	
+	///Funkcja czyœci plik z danymi dru¿yny
+	void Player::clean_file_team(string name) {
+		fstream plik;
+		if (name == "Wzór")
+			plik.open("teams/Wzór.txt", ios::out | ios::trunc);
+		if (name == "Dru¿yna_testowa")
+			plik.open("teams/Dru¿yna_testowa.txt", ios::out | ios::trunc);
+		if (name == "Pogoñ_Szczecin")
+			plik.open("teams/Szczecin.txt",ios::out | ios::trunc);
+		if (name == "Main_team")
+			plik.open("teams/main_team.txt", ios::out | ios::trunc);
+		if (name == "test") 
+			plik.open("teams/test.txt", ios::out | ios::trunc);
+		plik.close();
+	}
 
 	///Funkcja ³aduj¹ca statystyki z pliku
-	
 	void Player::load_stats(int number, string team_name) {
 		fstream file = open_file_team(team_name);
 		string line;
@@ -163,5 +180,31 @@ no_r_card (true)
 		position = (Player::Position) str_to_num(line);
 		getline(file, line);
 		no_r_card = str_to_num(line);
+		file.close();
+	}
+
+	///Funkcja ³aduj¹ca statystyki do pliku
+	void Player::send_stats(int number, string team_name) {
+		string line;
+		fstream file;
+		if(number == 0)
+		{
+			clean_file_team(team_name);
+			file = open_file_team(team_name);
+			file << endl << endl << endl << endl << endl;
+		} else file = open_file_team(team_name);
+
+		file << name << endl;
+		file << pace << endl;
+		file << passing << endl;
+		file << shooting << endl;
+		file << condition << endl;
+		file << defence << endl;
+		file << physicality << endl;
+		file << overall << endl;
+		file << injury << endl;
+		file << no_r_card << endl;
+		//file >> (int)position<< endl;
+		file << no_r_card << endl;
 		file.close();
 	}

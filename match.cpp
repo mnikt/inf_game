@@ -370,7 +370,6 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 			team2_midle += (team2[i]->get_stats("passing") + team2[i]->get_stats("pace") + team2[i]->get_stats("physicality"))
 				* (team2[i]->get_stats("overall") - 30) / 3 * (team2[i]->get_stats("condition") + 30) / 90 * team2[i]->get_card("red");//(((int)((int)(team2[i]->get_stats("condition") / 90) * 10 + team2[i]->get_stats("condition")) % 100 - 60));
 		}
-		cout << team1[5]->get_card("y_card") << endl;
 		int a = team1_midle; //zmienna pomocnicza 
 		team1_power = (8100 - team1_offensive / 11 + team2_defence / 11);
 		team2_power = (8100 - team2_offensive / 11 + team1_defence / 11) + 1;
@@ -552,4 +551,136 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 	}
 	///Wys³anie danych pomeczowych, statystyk itp.
 
+}
+
+void no_view_match(Player player1[17], Player player2[17]) {
+	///Rozpoczêcie meczu
+	///Wykonywane tylko raz
+
+	//Tablice wska¿ników pokazuj¹cych na pi³karzy
+	Player *team1[17];
+	Player *team2[17];
+	//Przypisanie pi³karzy do wska¿ników
+	for (int i = 0; i < 17; i++) {
+		team1[i] = &player1[i];
+		team2[i] = &player2[i];
+	}
+	srand(time(NULL));
+
+	double team1_defence = 0, team2_defence = 0, team1_offensive = 0, team2_offensive = 0, team1_midle = 0, team2_midle = 0;
+	int team1_power = 0, team2_power = 0;
+
+	long int random = 0;
+
+	int goals1 = 0, goals2 = 0;
+
+	///Przebieg meczu
+	///Wykonywane w ka¿dej minucie
+
+	for (int i = 1; i < 92; i++) {
+		team1_offensive = 0;
+		team1_defence = 0;
+		team1_midle = 0;
+		team2_offensive = 0;
+		team2_defence = 0;
+		team2_midle = 0;
+		team1_power = 0;
+		team2_power = 0;
+
+		for (int i = 0; i < 17; i++) {
+			team1[i]->set_overall();
+			team2[i]->set_overall();
+		}
+
+		for (int i = 0; i < 11; i++) {
+			team1_defence += (team1[i]->get_stats("defence") + team1[i]->get_stats("pace") + team1[i]->get_stats("physicality"))
+				* (team1[i]->get_stats("overall") - 30) / 3 * (team1[i]->get_stats("condition") + 30) / 90 * team1[i]->get_card("red");//(((int)((int)(team1[i]->get_stats("condition") / 90) * 10 + team1[i]->get_stats("condition")) % 100 - 60));
+			team2_defence += (team2[i]->get_stats("defence") + team2[i]->get_stats("pace") + team2[i]->get_stats("physicality"))
+				* (team2[i]->get_stats("overall") - 30) / 3 * (team2[i]->get_stats("condition") + 30) / 90 * team2[i]->get_card("red");// (((int)((int)(team2[i]->get_stats("condition") / 90) * 10 + team2[i]->get_stats("condition")) % 100 - 60));
+			team1_offensive += (team1[i]->get_stats("shooting") + team1[i]->get_stats("pace") + team1[i]->get_stats("physicality"))
+				* (team1[i]->get_stats("overall") - 30) / 3 * (team1[i]->get_stats("condition") + 30) / 90 * team1[i]->get_card("red");//(((int)((int)(team1[i]->get_stats("condition") / 90) * 10 + team1[i]->get_stats("condition")) % 100 - 60));
+			team2_offensive += (team2[i]->get_stats("shooting") + team2[i]->get_stats("pace") + team2[i]->get_stats("physicality"))
+				* (team2[i]->get_stats("overall") - 30) / 3 * (team2[i]->get_stats("condition") + 30) / 90 * team2[i]->get_card("red");//(((int)((int)(team2[i]->get_stats("condition") / 90) * 10 + team2[i]->get_stats("condition")) % 100 - 60));
+			team1_midle += (team1[i]->get_stats("passing") + team1[i]->get_stats("pace") + team1[i]->get_stats("physicality"))
+				* (team1[i]->get_stats("overall") - 30) / 3 * (team1[i]->get_stats("condition") + 30) / 90 * team1[i]->get_card("red");//(((int)((int)(team1[i]->get_stats("condition") / 90) * 10 + team1[i]->get_stats("condition")) % 100 - 60));
+			team2_midle += (team2[i]->get_stats("passing") + team2[i]->get_stats("pace") + team2[i]->get_stats("physicality"))
+				* (team2[i]->get_stats("overall") - 30) / 3 * (team2[i]->get_stats("condition") + 30) / 90 * team2[i]->get_card("red");//(((int)((int)(team2[i]->get_stats("condition") / 90) * 10 + team2[i]->get_stats("condition")) % 100 - 60));
+		}
+		int a = team1_midle; //zmienna pomocnicza 
+		team1_power = (8100 - team1_offensive / 11 + team2_defence / 11);
+		team2_power = (8100 - team2_offensive / 11 + team1_defence / 11) + 1;
+		team1_midle = (int)(team1_midle / team2_midle * 10);
+		team2_midle = (int)(team2_midle / a * 10);
+
+		int player_power;
+		for (int i = 0; i < 11; i++) {
+			player_power = ((team1[i]->get_stats("shooting") + team1[i]->get_stats("pace") + team1[i]->get_stats("physicality")) * (team1[i]->get_stats("overall") - 30) / 3 * (team1[i]->get_stats("condition") + 30) / 90);
+			//player_power = 1/(player_power * 11 / team1_offensive);
+			for (int j = 0; j < team1_midle; j++) {
+				if (team1[i]->get_card("red") == false) break;
+				random = rand() % (team1_power * team2_power);
+				if (random % player_power == 0)
+				{
+					goals1++;
+					break;
+				}
+			}
+			player_power = (team2[i]->get_stats("shooting") + team2[i]->get_stats("pace") + team2[i]->get_stats("physicality"))* (team2[i]->get_stats("overall") - 30) / 3 * (team2[i]->get_stats("condition") + 30) / 90;
+			//	 player_power = 1/(player_power / team2_offensive * 11);
+			for (int j = 0; j < team2_midle; j++) {
+				if (team2[i]->get_card("red") == false) break;
+				random = rand() % (team1_power * team2_power);
+				if (random % player_power == 0)
+				{
+					goals2++;
+					break;
+				}
+			}
+			//Spadek kondycji
+			if (team1[i]->get_card("red"))
+				team1[i]->condition_match_update();
+			if (team2[i]->get_card("red"))
+				team2[i]->condition_match_update();
+		}
+
+		//Otrzymanie ¿ó³tej kartki
+		random = rand() % 550;
+		if (random < 11) {
+			if (team1[random]->get_card("yellow") == true)
+			{
+				team1[random]->set_card("yellow");
+			}
+			else {
+				team1[random]->set_card("red");
+			}
+		}
+		else if (random < 22) {
+			if (team2[random - 11]->get_card("yellow") == true) {
+				team2[random - 11]->set_card("yellow");
+			}
+			else {
+				team2[random - 11]->set_card("red");
+			}
+		}
+
+		//Otrzymanie czerwonej kartki
+		random = rand() % 5000;
+		if (random < 11) {
+			team1[random]->set_card("red");
+		}
+		else if (random < 22) {
+			team2[random - 11]->set_card("red");
+		}
+
+		//Otrzymanie kontuzji
+		random = rand() % 3500;
+		if (random < 11) {
+			team1[random]->get_injury(rand() % 20);
+		}
+		else if (random < 22) {
+			team2[random - 11]->get_injury(rand() % 20);
+		}
+		///Wys³anie danych pomeczowych, statystyk itp.
+	}
+	cout << goals1 << ":" << goals2<<endl;
 }
