@@ -9,9 +9,9 @@ using namespace std;
 
 int str_to_num(string text) {
 	int a = 0;
-	if(text[0]!=NULL)
-	a += (text[0] - 48) * 10;
-	else return a;
+	if(text[1]!=NULL)
+	a += (text[0] - 48) * 10 ;
+	else a += text[0] - 48;
 	if(text[1]!=NULL)
 	a += (text[1] - 48);
 	return a;
@@ -203,8 +203,7 @@ no_r_card (true)
 		file << physicality << endl;
 		file << overall << endl;
 		file << injury << endl;
-		file << no_r_card << endl;
-		//file >> (int)position<< endl;
+		file << (int)position<< endl;
 		file << no_r_card << endl;
 		file.close();
 	}

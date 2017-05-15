@@ -1,199 +1,275 @@
-﻿#include <iostream>
-#include <time.h>
-#include <string>
-#include <windows.h>
-#include <SFML\Graphics.hpp>
+﻿#include <SFML/Graphics.hpp>
+#include <iostream>
 #include "match.h"
+class Button
+{
+private:
+	//sf::RenderWindow window;
 
-///Funkcja wyświetlająca statystyki piłkarzy w ekranie zarządzania drużyną i pozwalająca na dokonanie zmian
-void menu_team_management(sf::RenderWindow &window, Player team[17]) {
-	int clicked = -1;
-	Player *player[17];
-	for (int i = 0; i < 17; i++)
-		player[i] = &team[i];
+	sf::Text caption;
+	sf::RectangleShape shape;
 
+	sf::RenderWindow window;
+	std::string cap_text;
+	int cap_size;
+	sf::Color cap_color;
+	//float cap_pos_x;
+	//float cap_pos_y;
 	sf::Font font;
-	if (!font.loadFromFile("arial.ttf"))
-		cout << "Couldn't load font";
 
-	sf::Text text[17][9];
-	sf::Sprite card[17];
-	sf::Texture texture;
-	texture.loadFromFile("grafika/trawa.jpg");
+	float sh_size;
+	float shape_pos_x;
+	float shape_pos_y;
+	int sh_red;
+	int sh_green;
+	int sh_blue;
+	bool isHover = false;
+	//void hover(sf::RenderWindow &window);
 
-	//Ustawienie informacji o podawanych statystykach 
-	sf::Text inf[9];
-	for (int i = 0; i < 9; i++) {
-		inf[i].setFont(font);
-		inf[i].setColor(sf::Color::White);
-		inf[i].setCharacterSize(10);
-		inf[i].setPosition(i * 30 + 40, 85);
+public:
+	Button(sf::RenderWindow &window, std::string cap_text, float sh_pos_x, float sh_pos_y, float cap_pos_x, float cap_pos_y);
+	void draw();
+
+	bool check_Hover(sf::RenderWindow &window);
+
+	~Button();
+
+};
+
+Button::Button(sf::RenderWindow &window, std::string cap_text, float sh_pos_x, float sh_pos_y, float cap_pos_x, float cap_pos_y)
+	:
+	//window(sf::VideoMode(900, 700), "Futbal Menad?er v.1"),
+	cap_text("button"),
+	shape_pos_x(sh_pos_x),
+	shape_pos_y(sh_pos_y),
+	sh_size(100),
+	sh_red(100),
+	sh_green(250),
+	sh_blue(50),
+	cap_color(255, 255, 255),
+	cap_size(30)
+{
+	shape.setSize(sf::Vector2f(sh_size, sh_size));
+	shape.setPosition(sf::Vector2f(sh_pos_x, sh_pos_y));
+	shape.setFillColor(sf::Color(sh_red, sh_green, sh_blue));
+
+	if (font.loadFromFile("arial.ttf"));
+
+	caption.setString(cap_text);
+	caption.setFont(font);
+	caption.setCharacterSize(cap_size);
+	caption.setFillColor(cap_color);
+	caption.setPosition(cap_pos_x, cap_pos_y);
+	caption.setStyle(sf::Text::Regular);
+
+	window.draw(shape);
+	window.draw(caption);
+}
+
+void Button::draw()
+{
+
+}
+
+bool Button::check_Hover(sf::RenderWindow &window)
+{
+	if (sf::Mouse::getPosition(window).x >= shape_pos_x && sf::Mouse::getPosition(window).x <= sh_size + shape_pos_x && sf::Mouse::getPosition(window).y <= sh_size + shape_pos_y && sf::Mouse::getPosition(window).y >= shape_pos_y)
+	{
+		//if(sh_red+sh_green+sh_blue<380)
+		//  shape.setFillColor(sf::Color::Yellow);
+		//else
+		shape.setFillColor(sf::Color::Blue);
+		window.draw(shape);
+		isHover = true;
 	}
-	inf[0].setPosition(10, 85);
-	inf[0].setString("Name");
-	inf[1].setString("Pos");
-	inf[2].setString("Con");
-	inf[3].setString("Ovr");
-	inf[4].setString("Pac");
-	inf[5].setString("Sho");
-	inf[6].setString("Pas");
-	inf[7].setString("Def");
-	inf[8].setString("Phs");
 
-	for (int i = 0; i < 17; i++) {
-		for (int j = 0; j < 9; j++) {
-			text[i][j].setFont(font);
-			text[i][j].setColor(sf::Color::White);
-			text[i][j].setCharacterSize(15);
-		}
-		card[i].setPosition(305, i * 30 + 100);
-		if (player[i]->get_card("yellow") == false) {
-			texture.loadFromFile("grafika/żółta_kartka.jpg");
-			card[i].setTexture(texture);
-		}
-		if (player[i]->get_card("red") == false) {
-			texture.loadFromFile("grafika/czerwona_kartka.jpg");
-			card[i].setTexture(texture);
-		}
+	return isHover;
+}
 
-		text[i][0].setString(player[i]->get_name());
-		text[i][0].setPosition(5, i * 30 + 100);
-		//	text[i][1].setString(num_to_str(player[i]->get_position()));
-		//	text[i][1].setPosition(70, i * 30 + 100);
-		text[i][2].setString(num_to_str(player[i]->get_stats("condition")));
-		text[i][2].setPosition(100, i * 30 + 100);
-		text[i][3].setString(num_to_str(player[i]->get_stats("overall")));
-		text[i][3].setPosition(130, i * 30 + 100);
-		text[i][4].setString(num_to_str(player[i]->get_stats("pace")));
-		text[i][4].setPosition(160, i * 30 + 100);
-		text[i][5].setString(num_to_str(player[i]->get_stats("shooting")));
-		text[i][5].setPosition(190, i * 30 + 100);
-		text[i][6].setString(num_to_str(player[i]->get_stats("passing")));
-		text[i][6].setPosition(220, i * 30 + 100);
-		text[i][7].setString(num_to_str(player[i]->get_stats("defence")));
-		text[i][7].setPosition(250, i * 30 + 100);
-		text[i][8].setString(num_to_str(player[i]->get_stats("physicality")));
-		text[i][8].setPosition(280, i * 30 + 100);
+Button::~Button()
+{
+	//dtor
+}
+
+class Menu
+{
+private:
+
+	enum Whitch_button
+	{
+		is_nothing = 0,
+		is_sklad = 1,
+		is_matches = 2,
+		is_shop = 3,
+		is_trening = 4,
+		is_options = 5,
+		is_exit = 6,
+	};
+	//sf::RenderWindow window;
+
+
+public:
+
+	void main_menu(sf::RenderWindow &window);
+
+	Menu();
+	~Menu();
+
+};
+
+Menu::Menu()
+{
+	//ctor
+}
+
+Menu::~Menu()
+{
+	//dtor
+}
+
+void Menu::main_menu(sf::RenderWindow &window)
+{
+	Button sklad(window, "Sklad", 330, 160, 330, 230);
+	Button matches(window, "Mecze", 450, 160, 450, 230);
+	Button shop(window, "Handel", 570, 160, 570, 230);
+	Button trening(window, "trening", 330, 300, 330, 370);
+	Button options(window, "opcje", 450, 300, 450, 370);
+	Button exit(window, "wyjdz", 570, 300, 570, 370);
+	Whitch_button check = is_nothing;
+
+	if (sklad.check_Hover(window) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		check = is_sklad;
 	}
 
-	for (int i = 11; i < 17; i++) {
-		text[i][0].setColor(sf::Color(250, 250, 250, 170));
+	else if (matches.check_Hover(window) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		check = is_matches;
 	}
 
-	sf::Sprite save_button;
-	sf::Sprite return_button;
-	sf::Texture save_but;
-	sf::Texture return_but;
-	save_button.setPosition(650, 560);
-	return_button.setPosition(830, 560);
-	save_but.loadFromFile("grafika/Zapisz.png");
-	save_button.setTexture(save_but);
-	return_but.loadFromFile("grafika/Wyjdź.png");
-	return_button.setTexture(return_but);
-	save_button.setScale(sf::Vector2f(1.25, 1.25));
-	return_button.setScale(sf::Vector2f(1.25, 1.25));
-	
-	///Wykonywane w każdej klatce
-	while (!(sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition(window).y < 598 && sf::Mouse::getPosition(window).y >= 560 && sf::Mouse::getPosition(window).x >= 830 && sf::Mouse::getPosition(window).x < 930)) {
-		for (int i = 0; i < 17; i++) {
+	else if (shop.check_Hover(window) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		check = is_shop;
+	}
 
-			if (player[i]->get_card("red") == false) {
-				texture.loadFromFile("grafika/czerwona_kartka.jpg");
-				card[i].setTexture(texture);
-			}
+	else if (trening.check_Hover(window) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		check = is_trening;
+	}
 
-			text[i][0].setString(player[i]->get_name());
-			//	text[i][1].setString(num_to_str(player[i]->get_position()));
-			//	text[i][1].setPosition(70, i * 30 + 100);
-			text[i][2].setString(num_to_str(player[i]->get_stats("condition")));
-			text[i][3].setString(num_to_str(player[i]->get_stats("overall")));
-			text[i][4].setString(num_to_str(player[i]->get_stats("pace")));
-			text[i][5].setString(num_to_str(player[i]->get_stats("shooting")));
-			text[i][6].setString(num_to_str(player[i]->get_stats("passing")));
-			text[i][7].setString(num_to_str(player[i]->get_stats("defence")));
-			text[i][8].setString(num_to_str(player[i]->get_stats("physicality")));
-		}
+	else if (options.check_Hover(window) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		check = is_options;
+	}
 
-		for (int i = 11; i < 17; i++) {
-			text[i][0].setColor(sf::Color(250, 250, 250, 170));
-		}
-		
-		
-		for (int j = 0; j < 11; j++) {
-			text[j][0].setColor(sf::Color::White);
-		}
+	else if (exit.check_Hover(window) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		check = is_exit;
+	}
 
-			if (sf::Mouse::getPosition(window).x < 80 && sf::Mouse::getPosition(window).x>5 && sf::Mouse::getPosition(window).y < 595 && sf::Mouse::getPosition(window).y > 100)
-				text[(sf::Mouse::getPosition(window).y - 100) / 30][0].setColor(sf::Color(100, 80, 200));
+	switch (check)
+	{
+	case is_sklad:
+	{
+		Player players[17];
+		for (int i = 0; i < 17; i++)
+			players[i].load_stats(i, "Pogoń_Szczecin");
+		menu_team_management(window, players);
+		break;
+	}
 
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			int x, y;
-			x = sf::Mouse::getPosition(window).x;
-			y = sf::Mouse::getPosition(window).y;
+	case is_matches:
+	{	
+	Player players1[17], players2[17];
+	for (int i = 0; i < 17; i++)
+		players1[i].load_stats(i, "Pogoń_Szczecin");
+	match(players1, players2, window);
+	break;
 
-			if (x < 80 && x>5 && y < 595 && y > 100) {
-				if (clicked == (y - 100) / 30)
-					clicked = -1;
-				else if (clicked == -1)
-					clicked = (y - 100) / 30;
-				else {
-					if (player[clicked]->get_card("red") == false || player[(y - 100) / 30]->get_card("red") == false)
-					{
-						if ((clicked > 10 || (y - 100) / 30 > 10) && (clicked < 11 || (y - 100) / 30 < 11))
-							return;
-					}
-					Player *help;
-					help = player[clicked];
-					player[clicked] = player[(y - 100) / 30];
-					player[(y - 100) / 30] = help;
-					clicked = -1;
-				}
-			}
-		}
+	}
 
-		if (clicked != -1)
-			text[clicked][0].setColor(sf::Color::Yellow);
-		window.display();
+	case is_shop:
+	{
+		/*sf::Font font;
+		sf::Text caption;
+		if(font.loadFromFile("arial.ttf"));
 		window.clear();
+		caption.setString("Zarzadzaj skladem swojego klubu");
+		caption.setFont(font);
+		caption.setCharacterSize(50);
+		caption.setFillColor(sf::Color::Yellow);
+		caption.setPosition(20,20);
+		caption.setStyle(sf::Text::Regular);
+		window.draw(caption);*/
+	}
 
-		for (int y = 0; y < 9; y++)
-			window.draw(inf[y]);
+	case is_trening:
+	{
+		/*sf::Font font;
+		sf::Text caption;
+		if(font.loadFromFile("arial.ttf"));
+		window.clear();
+		caption.setString("Zarzadzaj skladem swojego klubu");
+		caption.setFont(font);
+		caption.setCharacterSize(50);
+		caption.setFillColor(sf::Color::Yellow);
+		caption.setPosition(20,20);
+		caption.setStyle(sf::Text::Regular);
+		window.draw(caption);*/
+	}
 
-		for (int x = 0; x < 17; x++) {
-			window.draw(card[x]);
-			for (int y = 0; y < 9; y++)
-				window.draw(text[x][y]);
-		}
-		window.draw(return_button);
-		window.draw(save_button);
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition(window).y < 598 && sf::Mouse::getPosition(window).y >= 560 && sf::Mouse::getPosition(window).x < 750 && sf::Mouse::getPosition(window).x >= 650) {
-			for(int i=0; i<17; i++)
-			player[i]->send_stats(i, "test");
-			
-		}
+	case is_options:
+	{
+		sf::Font font;
+		sf::Text caption;
+
+		if (font.loadFromFile("arial.ttf"));
+		caption.setString("Zarzadzaj skladem swojego klubu");
+		caption.setFont(font);
+		caption.setCharacterSize(50);
+		caption.setFillColor(sf::Color::Yellow);
+		caption.setPosition(20, 20);
+		caption.setStyle(sf::Text::Regular);
+		window.draw(caption);
+	}
+
+	case is_exit:
+	{
+		//Wyjście
+	}
 	}
 }
 
-int main() {
-	Player team1[17], team2[17];
-	
-	for (int i = 0; i < 17; i++) {
-		team1[i].load_stats(i, "Pogoń_Szczecin");
-	}
-	
-	sf::RenderWindow window(sf::VideoMode(1000, 600), "My window");
+int main()
+{
+	sf::RenderWindow window(sf::VideoMode(1000, 600), "SFML works!");
 	window.setFramerateLimit(8);
-	while (true) {
-		menu_team_management(window, team1);
-	}
-/*	for (int i = 0; i < 10; i++) {
-		for (int i = 0; i < 17; i++) {
-			team1[i].load_stats(i, "Pogoń_Szczecin");
-		}
-		no_view_match(team1, team2);
-		Sleep(1000); 
-	}*/
 
-	system("PAUSE");
+	sf::Texture background_texture;
+	if (!background_texture.loadFromFile("grafika/bckg.jpg"));
+	sf::Sprite background(background_texture);
+
+	sf::Texture logo_texture;
+	if (!logo_texture.loadFromFile("grafika/maly.png"));
+	sf::Sprite logo(logo_texture);
+	logo.setPosition(500, 20);
+
+	Menu men;
+
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+
+		window.clear();
+		window.draw(background);
+		men.main_menu(window);
+		window.display();
+	}
+
 	return 0;
 }

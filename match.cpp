@@ -134,7 +134,6 @@ void team_management(sf::RenderWindow &window, Player *player[17], int &clicked,
 	}
 }
 
-
 void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 	///Rozpoczêcie meczu
 	///Wykonywane tylko raz
@@ -422,7 +421,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 			//player_power = 1/(player_power * 11 / team1_offensive);
 			for (int j = 0; j < team1_midle; j++) {
 				if (team1[i]->get_card("red") == false) break;
-				random = rand() % (team1_power * team2_power);
+				random = 239 + rand() % (team1_power * team2_power);
 				if (random % player_power == 0)
 				{
 					goals1++;
@@ -437,7 +436,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 			//	 player_power = 1/(player_power / team2_offensive * 11);
 			for (int j = 0; j < team2_midle; j++) {
 				if (team2[i]->get_card("red") == false) break;
-				random = rand() % (team1_power * team2_power);
+				random = 241 + rand() % (team1_power * team2_power);
 				if (random % player_power == 0)
 				{
 					goals2++;
@@ -456,7 +455,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 		}
 
 		//Otrzymanie ¿ó³tej kartki
-		random = rand() % 550;
+		random = (rand()+19) % 550;
 		if (random < 11) {
 			if (team1[random]->get_card("yellow") == true) {
 				event[event_counter].set(event_counter, "team1", team1[random]->get_name(), clock, "y_card");
@@ -483,7 +482,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 		}
 
 		//Otrzymanie czerwonej kartki
-		random = rand() % 5000;
+		random = (rand() + 19) % 5000;
 		if (random < 11) {
 			event[event_counter].set(event_counter, "team1", team1[random]->get_name(), clock, "r_card");
 			event_counter++;
@@ -496,7 +495,7 @@ void match(Player player1[17], Player player2[17], sf::RenderWindow &window) {
 		}
 
 		//Otrzymanie kontuzji
-		random = rand() % 3500;
+		random = (rand() + 19) % 3500;
 		if (random < 11) {
 			event[event_counter].set(event_counter, "team1", team1[random]->get_name(), clock, "injury");
 			event_counter++;
@@ -683,4 +682,364 @@ void no_view_match(Player player1[17], Player player2[17]) {
 		///Wys³anie danych pomeczowych, statystyk itp.
 	}
 	cout << goals1 << ":" << goals2<<endl;
+}
+
+///Funkcja wyœwietlaj¹ca statystyki pi³karzy w ekranie zarz¹dzania dru¿yn¹ i pozwalaj¹ca na dokonanie zmian
+void menu_team_management(sf::RenderWindow &window, Player team[17]) {
+	int clicked = -1;
+	Player *player[17];
+	for (int i = 0; i < 17; i++)
+		player[i] = &team[i];
+
+	sf::Font font;
+	if (!font.loadFromFile("arial.ttf"))
+		cout << "Couldn't load font";
+
+	sf::Text text[17][9];
+	sf::Sprite card[17];
+	sf::Texture texture;
+	texture.loadFromFile("grafika/trawa.jpg");
+
+	//Ustawienie informacji o podawanych statystykach 
+	sf::Text inf[9];
+	for (int i = 0; i < 9; i++) {
+		inf[i].setFont(font);
+		inf[i].setColor(sf::Color::White);
+		inf[i].setCharacterSize(10);
+		inf[i].setPosition(i * 30 + 40, 85);
+	}
+	inf[0].setPosition(10, 85);
+	inf[0].setString("Name");
+	inf[1].setString("Pos");
+	inf[2].setString("Con");
+	inf[3].setString("Ovr");
+	inf[4].setString("Pac");
+	inf[5].setString("Sho");
+	inf[6].setString("Pas");
+	inf[7].setString("Def");
+	inf[8].setString("Phs");
+
+	for (int i = 0; i < 17; i++) {
+		for (int j = 0; j < 9; j++) {
+			text[i][j].setFont(font);
+			text[i][j].setColor(sf::Color::White);
+			text[i][j].setCharacterSize(15);
+		}
+		card[i].setPosition(305, i * 30 + 100);
+		if (player[i]->get_card("yellow") == false) {
+			texture.loadFromFile("grafika/¿ó³ta_kartka.jpg");
+			card[i].setTexture(texture);
+		}
+		if (player[i]->get_card("red") == false) {
+			texture.loadFromFile("grafika/czerwona_kartka.jpg");
+			card[i].setTexture(texture);
+		}
+
+		text[i][0].setString(player[i]->get_name());
+		text[i][0].setPosition(5, i * 30 + 100);
+	//	text[i][1].setString(num_to_str(player[i]->get_position()));
+	//	text[i][1].setPosition(70, i * 30 + 100);
+		text[i][2].setString(num_to_str(player[i]->get_stats("condition")));
+		text[i][2].setPosition(100, i * 30 + 100);
+		text[i][3].setString(num_to_str(player[i]->get_stats("overall")));
+		text[i][3].setPosition(130, i * 30 + 100);
+		text[i][4].setString(num_to_str(player[i]->get_stats("pace")));
+		text[i][4].setPosition(160, i * 30 + 100);
+		text[i][5].setString(num_to_str(player[i]->get_stats("shooting")));
+		text[i][5].setPosition(190, i * 30 + 100);
+		text[i][6].setString(num_to_str(player[i]->get_stats("passing")));
+		text[i][6].setPosition(220, i * 30 + 100);
+		text[i][7].setString(num_to_str(player[i]->get_stats("defence")));
+		text[i][7].setPosition(250, i * 30 + 100);
+		text[i][8].setString(num_to_str(player[i]->get_stats("physicality")));
+		text[i][8].setPosition(280, i * 30 + 100);
+	}
+
+	for (int i = 11; i < 17; i++) {
+		text[i][0].setColor(sf::Color(250, 250, 250, 170));
+	}
+
+	sf::Sprite save_button;
+	sf::Sprite return_button;
+	sf::Texture save_but;
+	sf::Texture return_but;
+	save_button.setPosition(650, 560);
+	return_button.setPosition(830, 560);
+	save_but.loadFromFile("grafika/Zapisz.png");
+	save_button.setTexture(save_but);
+	return_but.loadFromFile("grafika/WyjdŸ.png");
+	return_button.setTexture(return_but);
+	save_button.setScale(sf::Vector2f(1.25, 1.25));
+	return_button.setScale(sf::Vector2f(1.25, 1.25));
+
+	int formacja = 40402;
+	bool is_formation_open = false;
+	sf::Sprite face[11];
+	sf::Texture l_face;
+	l_face.loadFromFile("grafika/face.png");
+	l_face.setSmooth(true);
+
+	//"Zdjêcia" ze statystykami
+	sf::Text cards[11][14];
+	for (int i = 0; i < 11; i++) {
+		for (int j = 0; j < 14; j++) {
+			cards[i][j].setColor(sf::Color(10,10,10,255));
+			cards[i][j].setFont(font);
+			cards[i][j].setCharacterSize(12);
+		}
+		cards[i][2].setString("PAC");
+		cards[i][3].setString("SHO");
+		cards[i][4].setString("PAS");
+		cards[i][5].setString("PHY");
+		cards[i][6].setString("DEF");
+		cards[i][7].setString("CON");
+		cards[i][1].setCharacterSize(25);
+		face[i].setTexture(l_face);
+		face[i].setScale(sf::Vector2f(0.1, 0.1));
+	}
+	sf::Text formations[16];
+	for (int i = 0; i < 16; i++) {
+		formations[i].setColor(sf::Color(10, 10, 10, 255));
+		formations[i].setFont(font);
+		formations[i].setCharacterSize(20);
+		formations[i].setPosition(165, 40 + 20 * i);
+	}
+	sf::RectangleShape formations_background(sf::Vector2f(100, 25));
+	formations_background.setFillColor(sf::Color::White);
+	formations_background.setPosition(160, 35);
+	formations[0].setString("4-4-2");
+	formations[1].setString("5-3-2");
+	formations[2].setString("5-2-2-1");
+	formations[3].setString("5-2-1-2");
+	formations[4].setString("4-5-1");
+	formations[5].setString("4-4-2");
+	formations[6].setString("4-4-1-1");
+	formations[7].setString("4-3-3");
+	formations[8].setString("4-3-2-1");
+	formations[9].setString("4-3-1-2");
+	formations[10].setString("4-1-4-1");
+	formations[11].setString("4-2-2-2");
+	formations[12].setString("3-5-2");
+	formations[13].setString("3-4-3");
+	formations[14].setString("3-4-2-1");
+	formations[15].setString("3-4-1-2");
+
+
+	///Wykonywane w ka¿dej klatce
+	while (!(sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition(window).y < 598 && sf::Mouse::getPosition(window).y >= 560 && sf::Mouse::getPosition(window).x >= 830 && sf::Mouse::getPosition(window).x < 930)) {
+//Ustawienie kart w odpowiedniej pozycji i ze statystykami
+		for (int i = 0; i < 11; i++) {
+			cards[i][0].setString(player[i]->get_name());
+			//	text[i][1].setString(num_to_str(player[i]->get_position()));
+			//	text[i][1].setPosition(70, i * 30 + 100);
+			cards[i][13].setString(num_to_str(player[i]->get_stats("condition")));
+			cards[i][1].setString(num_to_str(player[i]->get_stats("overall")));
+			cards[i][8].setString(num_to_str(player[i]->get_stats("pace")));
+			cards[i][9].setString(num_to_str(player[i]->get_stats("shooting")));
+			cards[i][10].setString(num_to_str(player[i]->get_stats("passing")));
+			cards[i][12].setString(num_to_str(player[i]->get_stats("defence")));
+			cards[i][11].setString(num_to_str(player[i]->get_stats("physicality")));
+		}
+
+		int pomocnicza = 1;
+		cards[0][0].setPosition(595, 455);
+		for (int i = 0; i < formacja / 10000; i++) {
+			cards[pomocnicza][0].setPosition(270 + 650 /(formacja / 10000 + 1 ) * (i+1) , 365);
+			pomocnicza++;
+		}
+		for (int i = 0; i < formacja / 1000 % 10; i++) {
+			cards[pomocnicza][0].setPosition(270 + 650 / (formacja / 1000 %10 + 1) *(i + 1), 275);
+			pomocnicza++;
+		}
+		for (int i = 0; i < formacja / 100 % 10; i++) {
+			cards[pomocnicza][0].setPosition(270 + 650 / (formacja / 100 % 10 + 1) * (i + 1), 185);
+			pomocnicza++;
+		}
+		for (int i = 0; i < formacja / 10 % 10; i++) {
+			cards[pomocnicza][0].setPosition(270 + 650 / (formacja / 10 %10 + 1) * (i + 1), 95);
+			pomocnicza++;
+		}
+		for (int i = 0; i < formacja % 10; i++) {
+			cards[pomocnicza][0].setPosition(270 + 650 / (formacja %10 + 1) * (i + 1), 5);
+			pomocnicza++;
+		}
+
+		for (int a = 0; a < 11; a++) {
+			cards[a][1].setPosition(cards[a][0].getPosition().x + 5, cards[a][0].getPosition().y + 10);
+			cards[a][2].setPosition(cards[a][0].getPosition().x - 3, cards[a][0].getPosition().y + 40);
+			cards[a][3].setPosition(cards[a][0].getPosition().x - 3, cards[a][0].getPosition().y + 60);
+			cards[a][4].setPosition(cards[a][0].getPosition().x - 3, cards[a][0].getPosition().y + 80);
+			cards[a][5].setPosition(cards[a][0].getPosition().x + 45, cards[a][0].getPosition().y + 40);
+			cards[a][6].setPosition(cards[a][0].getPosition().x + 45, cards[a][0].getPosition().y + 60);
+			cards[a][7].setPosition(cards[a][0].getPosition().x + 45, cards[a][0].getPosition().y + 80);
+			cards[a][8].setPosition(cards[a][0].getPosition().x + 27, cards[a][0].getPosition().y + 40);
+			cards[a][9].setPosition(cards[a][0].getPosition().x + 27, cards[a][0].getPosition().y + 60);
+			cards[a][10].setPosition(cards[a][0].getPosition().x + 27, cards[a][0].getPosition().y + 80);
+			cards[a][11].setPosition(cards[a][0].getPosition().x + 72, cards[a][0].getPosition().y + 40);
+			cards[a][12].setPosition(cards[a][0].getPosition().x + 72, cards[a][0].getPosition().y + 60);
+			cards[a][13].setPosition(cards[a][0].getPosition().x + 72, cards[a][0].getPosition().y + 80);
+			face[a].setPosition(cards[a][0].getPosition().x + 40, cards[a][0].getPosition().y + 8);
+		}
+		
+		for (int i = 0; i < 17; i++) {
+			if (player[i]->get_card("red") == false) {
+				texture.loadFromFile("grafika/czerwona_kartka.jpg");
+				card[i].setTexture(texture);
+			}
+
+			text[i][0].setString(player[i]->get_name());
+			//text[i][1].setString(num_to_str(player[i]->get_position()));
+			//text[i][1].setPosition(70, i * 30 + 100);
+			text[i][2].setString(num_to_str(player[i]->get_stats("condition")));
+			text[i][3].setString(num_to_str(player[i]->get_stats("overall")));
+			text[i][4].setString(num_to_str(player[i]->get_stats("pace")));
+			text[i][5].setString(num_to_str(player[i]->get_stats("shooting")));
+			text[i][6].setString(num_to_str(player[i]->get_stats("passing")));
+			text[i][7].setString(num_to_str(player[i]->get_stats("defence")));
+			text[i][8].setString(num_to_str(player[i]->get_stats("physicality")));
+		}
+
+		for (int i = 11; i < 17; i++) {
+			text[i][0].setColor(sf::Color(250, 250, 250, 170));
+		}
+
+		for (int j = 0; j < 11; j++) {
+			text[j][0].setColor(sf::Color::White);
+		}
+
+		if (is_formation_open == true) {
+			if (sf::Mouse::getPosition(window).x < 260 && sf::Mouse::getPosition(window).x > 160 && sf::Mouse::getPosition(window).y < 355 && sf::Mouse::getPosition(window).y > 40) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+					formations[0].setString(formations[(sf::Mouse::getPosition(window).y - 40) / 20].getString());
+					switch ((sf::Mouse::getPosition(window).y - 40) / 20) {
+					case 1:
+						formacja = 50302;
+						break;
+					case 2:
+						formacja = 50221;
+						break;
+					case 3:
+						formacja = 50212;
+						break;
+					case 4:
+						formacja = 40501;
+						break;
+					case 5:
+						formacja = 40402;
+						break;
+					case 6:
+						formacja = 40411;
+						break;
+					case 7:
+						formacja = 40303;
+						break;
+					case 8:
+						formacja = 40321;
+						break;
+					case 9:
+						formacja = 40312;
+						break;
+					case 10:
+						formacja = 41401;
+						break;
+					case 11:
+						formacja = 42022;
+						break;
+					case 12:
+						formacja = 30502;
+						break;
+					case 13:
+						formacja = 30403;
+						break;
+					case 14:
+						formacja = 30421;
+						break;
+					case 15:
+						formacja = 30412;
+						break;				
+					}
+					is_formation_open = false;
+				}
+				else {
+					for(int i=0; i<16; i++)
+						formations[i].setColor(sf::Color::Black);
+					formations[(sf::Mouse::getPosition(window).y - 40) / 20].setColor(sf::Color::Blue);
+				}
+			}
+		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			if (sf::Mouse::getPosition(window).x < 260 && sf::Mouse::getPosition(window).x > 160 && sf::Mouse::getPosition(window).y < 60 && sf::Mouse::getPosition(window).y > 35)
+				is_formation_open = !is_formation_open;
+		
+		if (sf::Mouse::getPosition(window).x < 80 && sf::Mouse::getPosition(window).x>5 && sf::Mouse::getPosition(window).y < 595 && sf::Mouse::getPosition(window).y > 100)
+			text[(sf::Mouse::getPosition(window).y - 100) / 30][0].setColor(sf::Color(100, 80, 200));
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			int x, y;
+			x = sf::Mouse::getPosition(window).x;
+			y = sf::Mouse::getPosition(window).y;
+
+			if (x < 80 && x>5 && y < 595 && y > 100) {
+				if (clicked == (y - 100) / 30)
+					clicked = -1;
+				else if (clicked == -1)
+					clicked = (y - 100) / 30;
+				else {
+					if (player[clicked]->get_card("red") == false || player[(y - 100) / 30]->get_card("red") == false)
+					{
+						if ((clicked > 10 || (y - 100) / 30 > 10) && (clicked < 11 || (y - 100) / 30 < 11))
+							return;
+					}
+					Player *help;
+					help = player[clicked];
+					player[clicked] = player[(y - 100) / 30];
+					player[(y - 100) / 30] = help;
+					clicked = -1;
+				}
+			}
+		}
+		sf::Texture background_texture;
+		if (background_texture.loadFromFile("grafika/bckg.jpg"));
+		sf::Sprite background(background_texture);
+		if (clicked != -1)
+			text[clicked][0].setColor(sf::Color::Yellow);
+		window.display();
+		window.clear();
+		window.draw(background);
+
+		for (int i = 0; i < 11; i++) {
+			window.draw(face[i]);
+			for (int j = 0; j < 14; j++)
+				window.draw(cards[i][j]);
+		}
+
+		for (int y = 0; y < 9; y++)
+			window.draw(inf[y]);
+
+		for (int x = 0; x < 17; x++) {
+			window.draw(card[x]);
+			for (int y = 0; y < 9; y++)
+				window.draw(text[x][y]);
+		}
+		if (is_formation_open == false) {
+			formations_background.setSize(sf::Vector2f(100, 25));
+			window.draw(formations_background);
+			window.draw(formations[0]);
+		}
+		else {
+			formations_background.setSize(sf::Vector2f(100, 340));
+			window.draw(formations_background);
+			for(int i=0;i<16;i++)
+			window.draw(formations[i]);
+		}
+
+
+		window.draw(return_button);
+		window.draw(save_button);
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition(window).y < 598 && sf::Mouse::getPosition(window).y >= 560 && sf::Mouse::getPosition(window).x < 750 && sf::Mouse::getPosition(window).x >= 650) {
+			for (int i = 0; i<17; i++)
+				player[i]->send_stats(i, "Pogoñ_Szczecin");
+		}
+	}
 }

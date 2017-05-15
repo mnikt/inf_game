@@ -17,3 +17,6 @@ void team_management(sf::RenderWindow &window, Player *player[17], int &clicked,
 void match(Player player1[17], Player player2[17], sf::RenderWindow &window);
 
 void no_view_match(Player player1[17], Player player2[17]);
+
+///Funkcja wyœwietlaj¹ca statystyki pi³karzy w ekranie zarz¹dzania dru¿yn¹ i pozwalaj¹ca na dokonanie zmian
+void menu_team_management(sf::RenderWindow &window, Player team[17]);
