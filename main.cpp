@@ -4,8 +4,6 @@
 class Button
 {
 private:
-	//sf::RenderWindow window;
-
 	sf::Text caption;
 	sf::RectangleShape shape;
 
@@ -75,11 +73,12 @@ bool Button::check_Hover(sf::RenderWindow &window)
 {
 	if (sf::Mouse::getPosition(window).x >= shape_pos_x && sf::Mouse::getPosition(window).x <= sh_size + shape_pos_x && sf::Mouse::getPosition(window).y <= sh_size + shape_pos_y && sf::Mouse::getPosition(window).y >= shape_pos_y)
 	{
-		//if(sh_red+sh_green+sh_blue<380)
-		//  shape.setFillColor(sf::Color::Yellow);
-		//else
-		shape.setFillColor(sf::Color::Blue);
+		if(sh_red+sh_green+sh_blue<380)
+		  shape.setFillColor(sf::Color(sh_red + 25, sh_green +25, sh_blue+25));
+		else
+			shape.setFillColor(sf::Color(sh_red - 25, sh_green - 25, sh_blue - 25));
 		window.draw(shape);
+		window.draw(caption);
 		isHover = true;
 	}
 
@@ -185,7 +184,6 @@ void Menu::main_menu(sf::RenderWindow &window)
 		players1[i].load_stats(i, "Pogoń_Szczecin");
 	match(players1, players2, window);
 	break;
-
 	}
 
 	case is_shop:
@@ -235,7 +233,7 @@ void Menu::main_menu(sf::RenderWindow &window)
 
 	case is_exit:
 	{
-		//Wyjście
+		window.close();
 	}
 	}
 }
