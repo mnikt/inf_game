@@ -129,11 +129,11 @@ Menu::~Menu()
 void Menu::main_menu(sf::RenderWindow &window)
 {
 	Button sklad(window, "Sklad", 330, 160, 330, 230);
-	Button matches(window, "Mecze", 450, 160, 450, 230);
-	Button shop(window, "Handel", 570, 160, 570, 230);
-	Button trening(window, "trening", 330, 300, 330, 370);
-	Button options(window, "opcje", 450, 300, 450, 370);
-	Button exit(window, "wyjdz", 570, 300, 570, 370);
+	Button matches(window, "Dalej", 450, 160, 450, 230);
+	Button shop(window, "Rynek", 570, 160, 570, 230);
+	Button trening(window, "Trening", 330, 300, 330, 370);
+	Button options(window, "Tabela", 450, 300, 450, 370);
+	Button exit(window, "Wyjdz", 570, 300, 570, 370);
 	Whitch_button check = is_nothing;
 
 	if (sklad.check_Hover(window) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
